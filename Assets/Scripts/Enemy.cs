@@ -12,6 +12,7 @@ public class Enemy : MovingObject {
     private bool skipMove;
     public AudioClip enemyAttack1;
     public AudioClip enemyAttack2;
+    private bool enemyHit = false;
 
     // Use this for initialization
     protected override void Start () {
@@ -32,15 +33,32 @@ public class Enemy : MovingObject {
     }
 
     public void MoveEnemy(){
+        //Declare variables for X and Y axis move directions, these range from -1 to 1.
+        //These values allow us to choose between the cardinal directions: up, down, left and right.
         int xDir = 0;
         int yDir = 0;
+        RaycastHit2D hit;
 
-        if (Mathf.Abs(target.position.x - transform.position.x) < float.Epsilon)
-            //If this is true, we are going to move the enemy up (1), and if not we are going to move the enemy down(-1)
+        //If the difference in positions is approximately zero (Epsilon) do the following:
+        if (Mathf.Abs(target.position.x - transform.position.x) < float.Epsilon){
+            //If the y coordinate of the target's (player) position is greater than the y coordinate of this enemy's position set y direction 1 (to move up). If not, set it to -1 (to move down).
             yDir = target.position.y > transform.position.y ? 1 : -1;
-        else
-            xDir = target.position.x > transform.position.x ? 1 : -1;
+            if (Move(xDir, yDir, out hit) == false)
+            {
+                yDir = 0;
+                xDir = target.position.x > transform.position.x ? 1 : -1;
+            }
 
+        }
+        else{
+            xDir = target.position.x > transform.position.x ? 1 : -1;
+            if(Move(xDir, yDir, out hit)==false){
+                xDir = 0;
+                yDir = target.position.y > transform.position.y ? 1 : -1;
+            }
+        }
+
+        //Call the AttemptMove function and pass in the generic parameter Player, because Enemy is moving and expecting to potentially encounter a Player
         AttemptMove<Player>(xDir, yDir);
     }
 

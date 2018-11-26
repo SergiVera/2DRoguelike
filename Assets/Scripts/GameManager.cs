@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour {
 
     public void GameOver(){
         //Disable the GameManager
-        levelText.text = "After" + level + "days, you starved.";
+        levelText.text = "After " + level + " days, you starved.";
         //We put the background in black color, the color we have chosen earlier
         levelImage.SetActive(true);
         enabled = false;
@@ -75,7 +75,6 @@ public class GameManager : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        Debug.Log("players: " + playersTurn + "enemies: " + enemiesMoving);
         if (playersTurn || enemiesMoving || doingSetup)
             return;
 
