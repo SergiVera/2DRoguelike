@@ -40,6 +40,8 @@ public class BoardManager : MonoBehaviour {
                 gridPositions.Add(new Vector3(x,y,0f));
             }
         }
+
+        ShowToast();
     }
 
     //We Instantiate the outerWalls and the floor, which goes from -1 (lower left) to the rest extrems
@@ -91,4 +93,54 @@ public class BoardManager : MonoBehaviour {
         LayoutObjectAtRandom(enemyTiles, enemyCount, enemyCount);
         Instantiate(exit, new Vector3(columns - 1, rows - 1, 0f), Quaternion.identity);
     }
+
+    //C# code
+    private void ShowToast()
+    {
+    #if UNITY_ANDROID
+
+        AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+
+        //create an object array of 3 size
+        object[] toastParams = new object[3];
+
+        //create a class reference the unity player activity
+        AndroidJavaClass unityActivity = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+
+        //set the first object in the array as current activity reference
+        toastParams[0] = unityActivity.GetStatic<AndroidJavaObject>("currentActivity");
+
+        //set the second object in the array as the CharSequence to be displayed
+        toastParams[1] = getGameMap();
+
+        //set the third object in the array as the duration of the toast from
+        toastParams[2] = toastClass.GetStatic<int>("LENGTH_LONG");
+
+        AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", toastParams);
+
+        toastObject.Call("show");
+    #endif
+    }
+
+    private String getGameMap()
+    {
+#if UNITY_ANDROID
+        AndroidJavaObject mapObject = new AndroidJavaObject("MyClass");
+        String res = mapObject.Call<String>("getStringMap");
+        Debug.Log("String mapa: " + res);
+        return res;
+#endif
+    }
+
+    /*private String dimeHola()
+    {
+    #if UNITY_ANDROID
+        AndroidJavaObject mcObject = new AndroidJavaObject("MiClase");
+        String ret = mcObject.Call<String>("miFunc");
+        Debug.Log("Palabra: " + ret);
+        return ret;
+    #else
+        return "SOY UN STRING DE PRUEBA";
+    #endif
+    }*/
 }
